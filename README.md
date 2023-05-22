@@ -5,4 +5,6 @@ This is a Speech2Text API using OpenAI Whisper for audio transcription. It is li
 ### RUN
 To run on your local computer or cloud vm, use the following command;
 
-```docker-compose up```
+```
+docker-compose up
+```
