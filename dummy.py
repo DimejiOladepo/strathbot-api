@@ -6,4 +6,4 @@ def transcribe_audio(file_path: str) -> str:
     os.remove(file_path)
     return text
 
-transcribe_audio("Audio.mp3")
+transcribe_audio("test/Audio.mp3")
