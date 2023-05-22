@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  api:
+    container_name: strathbot-api
+    build: .
+    command: python3 ./app/dummy.py
+    volumes:
+      - ./:/usr/src/app/
+    env_file:
+      - ./.env
+    ports:
+      - 7070:7070
+
