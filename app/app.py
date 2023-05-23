@@ -1,9 +1,17 @@
 from fastapi import FastAPI, UploadFile, HTTPException, File, Depends
-from fastapi.openapi.utils import get_openapi
-from typing import List
+from fastapi.security.http import HTTPAuthorizationCredentials, HTTPBearer
+from typing import List, Optional
+from starlette import status
+from pydantic import BaseModel
 import uvicorn
 import os
 import whisper
+from dotenv import load_dotenv
+
+load_dotenv()
+
+get_bearer_token = HTTPBearer(auto_error=False)
+known_tokens = set([os.getenv('BearerToken')])
 
 def transcribe_audio(file_path: str) -> str:
     model = whisper.load_model("large")
@@ -12,14 +20,22 @@ def transcribe_audio(file_path: str) -> str:
     return text
 
 app = FastAPI(
-    title='Strath-bot API',
+    title='Strath-Bot API',
     version='0.1.0',
-    description='Audio Processing Service'
+    description='Bot Service'
 )
 
-@app.post("/api/v1/upload/", tags=["Speech2Text"])
-async def upload_file(file: UploadFile = File(description="mp3 file")):
+class UnauthorizedMessage(BaseModel):
+    detail: str = "Bearer token missing or unknown"
 
+@app.post("/api/v1/upload/", tags=["Speech2Text"])
+async def upload_file(file: UploadFile = File(description="mp3 file"), auth: Optional[HTTPAuthorizationCredentials] = Depends(get_bearer_token)):
+    if auth is None or (token := auth.credentials) not in known_tokens:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=UnauthorizedMessage().detail,
+        )
+    
     # Check file size
     if file.content_type != "audio/mpeg" or len(await file.read()) >= 5242880:
         raise HTTPException(status_code=400, detail="Invalid file format or size")
