@@ -1,12 +1,12 @@
 # pull official base image
 FROM python:3.9-slim-buster
 
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
 # set work directory
 WORKDIR /usr/src/app
-
-# set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update
 RUN apt-get install -y ffmpeg
