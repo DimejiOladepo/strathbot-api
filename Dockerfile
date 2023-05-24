@@ -9,6 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update
+RUN apt-get install -y ffmpeg
 
 # install dependencies
 RUN pip install --upgrade pip
