@@ -13,4 +13,5 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           USERNAME: ${{ secrets.SSH_USERNAME }}
           KEY: ${{ secrets.SSH_KEY }}
-          script: cd ${{ secrets.PATH }} && ${{ secrets.ENV_FILE }} > .env && git pull && docker-compose up --build -d
+          run: echo "${{ secrets.ENV_FILE }}" > .env
+          script: cd ${{ secrets.PATH }} && git pull && docker-compose up --build -d
