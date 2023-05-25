@@ -10,6 +10,7 @@ WORKDIR /usr/src/app
 
 RUN apt-get update
 RUN apt-get install -y ffmpeg
+RUN apt-get install --assume-yes git
 
 # install dependencies
 RUN pip install --upgrade pip
