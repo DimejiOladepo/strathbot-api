@@ -14,10 +14,20 @@ get_bearer_token = HTTPBearer(auto_error=False)
 known_tokens = set([os.getenv('BearerToken')])
 
 def transcribe_audio(file_path: str) -> str:
-    model = whisper.load_model("large")
+    model = whisper.load_model("tiny")
     text = model.transcribe(file_path, fp16=False)
     os.remove(file_path)
     return text
+    
+# Use Faster-whisper for much better speed compared to whisper tiny
+def transcribe_audio_faster(file_path: str) -> str:
+    from faster_whisper import WhisperModel
+    model_size = "tiny"
+    #run on CPU with INT8
+    model = WhisperModel(model_size, device="cpu", compute_type="int8")
+    segments, info = model.transcribe(file_path, beam_size=5)
+    for segment in segments:
+        return(segment.text)
 
 app = FastAPI(
     title='Strath-Bot API',
@@ -46,6 +56,8 @@ async def upload_file(file: UploadFile = File(description="mp3 file"), auth: Opt
 
     # Transcribe the audio file
     transcription = transcribe_audio(file.filename)
+    # With faster_whisper
+    #transcription = transcribe_audio_faster(file.filename)
 
     # Return the transcription result
     return {"transcription": transcription}
