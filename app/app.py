@@ -45,10 +45,10 @@ async def upload(file: UploadFile = File(description="mp3 file"), auth: Optional
         )
     
     
-
-    if "audio" in file.content_type and len(await file.read()) <= 5242880:
+    cont=await file.read()
+    if "audio" in file.content_type and len(cont) <= 5242880:
         audio_source = "audio_source." + file.filename[-3:]
-        audio_content = await file.read()
+        audio_content = cont
         open(audio_source, "wb").write(audio_content)
         transcription = transcribe_audio(audio_source)
         for text in transcription:
